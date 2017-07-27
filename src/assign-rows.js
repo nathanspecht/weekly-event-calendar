@@ -5,10 +5,10 @@ const isBetween = (date, event, inclusivity) =>
   moment(date).isBetween(event.rangeStart, event.rangeEnd, null, inclusivity)
 
 const doesOverlap = event1 => event2 =>
-  isBetween(event1.rangeStart, event2, '[)') ||
-  isBetween(event1.rangeEnd, event2, '(]') ||
-  isBetween(event2.rangeStart, event1, '[)') ||
-  isBetween(event2.rangeEnd, event1, '(]')
+  isBetween(event1.rangeStart, event2, '[]') ||
+  isBetween(event1.rangeEnd, event2, '[]') ||
+  isBetween(event2.rangeStart, event1, '[]') ||
+  isBetween(event2.rangeEnd, event1, '[]')
 
 const assignRows = (events, preserveRow) => {
   const rows = [[]]

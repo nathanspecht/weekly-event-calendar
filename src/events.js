@@ -1,10 +1,21 @@
 import moment from 'moment'
+import R from 'ramda'
 
-const a = (f, t, _id) => ({
-  _id,
-  rangeStart: moment().add(f, 'days'),
-  rangeEnd: moment().add(t, 'days')
-})
+const a = (f, t, _id, atStart) => {
+  const addDays = R.compose(
+    R.cond([
+      [R.always(atStart), R.invoker(1, 'startOf')('day')],
+      [R.T, R.identity]
+    ]),
+    d => moment().add(d, 'days')
+  )
+
+  return {
+    _id,
+    rangeStart: addDays(f),
+    rangeEnd: addDays(t)
+  }
+}
 
 const events = {
   a: {
@@ -29,13 +40,13 @@ const events = {
   },
   e: {
     _id: 'e',
-    rangeStart: moment(),
+    rangeStart: moment().add(1, 'day'),
     rangeEnd: moment().add(3, 'days')
   },
-  g: a(2, 4, 'g'),
-  h: a(2, 4, 'h'),
-  i: a(2, 4, 'i'),
-  j: a(2, 4, 'j')
+  g: a(3, 10, 'g', true),
+  h: a(2, 4, 'h', true),
+  i: a(2, 4, 'i', false),
+  j: a(2, 4, 'j', true)
 }
 
 export default events

@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css'
-// import App from './App'
-import Week from './Week'
+import Schedule from './components/Schedule'
 import registerServiceWorker from './registerServiceWorker'
+import './index.css'
+import 'react-virtualized/styles.css'
 
-ReactDOM.render(<Week />, document.getElementById('root'))
+ReactDOM.render(<Schedule />, document.getElementById('root'))
 registerServiceWorker()
