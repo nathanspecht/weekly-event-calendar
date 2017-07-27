@@ -1,0 +1,41 @@
+import moment from 'moment'
+
+const a = (f, t, _id) => ({
+  _id,
+  rangeStart: moment().add(f, 'days'),
+  rangeEnd: moment().add(t, 'days')
+})
+
+const events = {
+  a: {
+    _id: 'a',
+    rangeStart: moment('2017-08-07T12:00:00.000'),
+    rangeEnd: moment('2017-08-11T12:00:00.000')
+  },
+  b: {
+    _id: 'b',
+    rangeStart: moment('2017-08-08T12:00:00.000'),
+    rangeEnd: moment('2017-08-11T17:00:00.000')
+  },
+  c: {
+    _id: 'c',
+    rangeStart: moment('2017-08-05T12:00:00.000'),
+    rangeEnd: moment('2017-08-09T00:00:00.000')
+  },
+  d: {
+    _id: 'd',
+    rangeStart: moment('2017-08-09T12:00:00.000'),
+    rangeEnd: moment('2017-08-13T00:00:00.000')
+  },
+  e: {
+    _id: 'e',
+    rangeStart: moment(),
+    rangeEnd: moment().add(3, 'days')
+  },
+  g: a(2, 4, 'g'),
+  h: a(2, 4, 'h'),
+  i: a(2, 4, 'i'),
+  j: a(2, 4, 'j')
+}
+
+export default events
