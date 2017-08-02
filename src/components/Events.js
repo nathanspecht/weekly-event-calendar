@@ -11,7 +11,7 @@ import {
   sortBy,
   prop
 } from 'ramda'
-import Draggable from 'react-draggable'
+import Event from './Event'
 import moment from 'moment'
 import events from '../events'
 import assignRows from '../assign-rows'
@@ -47,60 +47,29 @@ class Events extends Component {
     super(props)
     this.state = {
       events: {},
-      extraCells: 0
+      extraCells: 0,
+      phantomPosition: 0,
+      isDragging: false
     }
   }
 
   cellRenderer = ({ key, style, index }) => {
     const _ids = sortedIds(this.state.events)
     const _id = _ids[index]
-    if (!_id) return <div />
+    if (!_id) return <div id="phantom" key={key} style={style} />
+
     const event = this.state.events[_id]
+    const handleStop = this.handleStop(index)
     return (
-      <Draggable
-        axis="x"
-        cancel="#extend"
-        onStop={this.handleStop(index)}
-        key={event._id}
-        position={{ x: 0, y: 0 }}
-      >
-        <div
-          key={event._id}
-          id={event._id}
-          className="relative bg-light-gray br4 pt3 pl3"
-          style={{
-            ...style,
-            transition: 'top 0.5s'
-          }}
-        >
-          <div id="extend">
-            <Draggable
-              axis="x"
-              position={{ x: 0, y: 0 }}
-              onStop={this.handleStop(index, 'START')}
-            >
-              <div className="absolute bg-light-gray h-100 w2 left-0 top-0 br4 br--left" />
-            </Draggable>
-          </div>
-          <div className="ml4">
-            <div className="f5">
-              {moment(event.rangeStart).format('MMMM D @ h A')}
-            </div>
-            <div className="f6 lh-copy">
-              {event._id}
-            </div>
-          </div>
-          <div id="extend">
-            <Draggable
-              axis="x"
-              position={{ x: 0, y: 0 }}
-              onStop={this.handleStop(index, 'END')}
-            >
-              <div className="absolute bg-light-gray h-100 w2 right-0 top-0 br4 br--right" />
-            </Draggable>
-          </div>
-        </div>
-      </Draggable>
+      <div key={key}>
+        <Event
+          event={event}
+          handleStop={handleStop}
+          style={style}
+          handleStart={this.handleStart}
+          isDragging={this.state.isDragging}
+        />
+      </div>
     )
   }
 
@@ -109,12 +78,11 @@ class Events extends Component {
     const datum = positionedEvents[index]
     if (!datum)
       return {
-        height: 0,
-        width: 0,
-        x: 0,
-        y: 0
+        height: 50,
+        width: 50,
+        x: this.state.phantomPosition + 1505,
+        y: 550
       }
-    console.log('Next x: ', datum.x)
     return {
       height: datum.height,
       width: datum.width,
@@ -123,7 +91,7 @@ class Events extends Component {
     }
   }
 
-  handleStop = (index, extend) => (_, drag) => {
+  handleStop = index => extend => (_, drag) => {
     const _ids = sortedIds(this.state.events)
     const _id = _ids[index]
     const event = this.state.events[_id]
@@ -143,10 +111,22 @@ class Events extends Component {
             : event.rangeEnd
       }
     })
-    this.setState({
-      events: nextEvents,
-      extraCells: this.state.extraCells >= 1 ? 0 : 1
-    })
+    this.setState({ events: nextEvents, isDragging: false })
+    this.updateCollection()
+  }
+
+  handleStart = () => this.setState({ isDragging: true })
+
+  updateCollection() {
+    this.setState({ extraCells: this.state.extraCells >= 1 ? 0 : 1 })
+  }
+
+  updatePhantomElement = ({ scrollWidth, scrollLeft }) => {
+    if (scrollLeft + 1512 >= scrollWidth) {
+      console.log('Updating scroll element')
+      this.setState({ phantomPosition: scrollWidth + 1512 })
+      this.updateCollection()
+    }
   }
 
   componentDidMount() {
@@ -154,13 +134,17 @@ class Events extends Component {
   }
 
   render() {
-    const cellCount = values(this.state.events).length + this.state.extraCells
+    const cellCount =
+      values(this.state.events).length + this.state.extraCells + 2
     const cellSizeAndPositionGetter = this.cellSizeAndPositionGetter(
       this.state.events
     )
     return (
       <Collection
-        onScroll={this.props.onScroll}
+        onScroll={args => {
+          this.props.onScroll(args)
+          this.updatePhantomElement(args)
+        }}
         ref={collection => (this.collection = collection)}
         cellCount={cellCount}
         cellRenderer={this.cellRenderer}

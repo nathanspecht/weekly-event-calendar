@@ -10,7 +10,7 @@ const WIDTH = 1512
 
 class Days extends Component {
   weekDayCellRenderer = ({ key, style, index }) => {
-    const day = moment().startOf('day').add(index, 'days').format('ddd')
+    const day = moment().startOf('day').add(index, 'days').format('ddd M/DD')
 
     return (
       <div
@@ -41,7 +41,7 @@ class Days extends Component {
         cellSizeAndPositionGetter={this.weekDayCellSizeAndPositionGetter}
         height={this.props.height}
         width={WIDTH}
-        cellCount={100}
+        cellCount={Math.ceil(this.props.scrollWidth / 216)}
       />
     )
   }
