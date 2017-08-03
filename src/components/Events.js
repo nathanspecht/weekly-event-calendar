@@ -15,18 +15,9 @@ import Event from './Event'
 import moment from 'moment'
 import events from '../events'
 import assignRows from '../assign-rows'
+import { numHours, getPixelCount, getHourCount } from '../util'
 
 const HEIGHT = values(events).length * 75 + 10
-
-const numHours = (rangeStart, rangeEnd) =>
-  Math.floor(
-    moment.duration(moment(rangeEnd).diff(moment(rangeStart))).asHours()
-  )
-
-const getPixelCount = (rangeStart, rangeEnd) =>
-  9 * numHours(rangeStart, rangeEnd)
-
-const getHourCount = pixelCount => Math.round(pixelCount / 9)
 
 const sortedIds = compose(sortBy(identity), keys)
 
