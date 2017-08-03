@@ -1,7 +1,8 @@
 {
   "name": "weekly-event-calendar",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.0.1",
+  "private": false,
+  "main": "lib/index.js",
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
@@ -59,7 +60,8 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "lib": "babel src/node_modules --out-dir lib --copy-files"
   },
   "jest": {
     "collectCoverageFrom": [
