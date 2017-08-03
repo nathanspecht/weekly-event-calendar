@@ -45,7 +45,7 @@ class Event extends Component {
   }
 
   render() {
-    const { event, style, handleStop } = this.props
+    const { event, style, handleStop, translateY } = this.props
     const left = this.getLeft(style.left)
     const width = this.getWidth(style.width)
     const isUnfocused = this.props.isDragging && !this.state.isSelfDragging
@@ -54,99 +54,138 @@ class Event extends Component {
     const hourOffset = getHourCount(this.state.extendAmt)
 
     return (
-      <Draggable
-        axis="x"
-        cancel="#extend"
-        onStart={this.handleStart()}
-        onStop={this.handleStop()}
-        onDrag={this.handleDrag}
-        position={{ x: 0, y: 0 }}
+      <div
+        style={{
+          transform: `translate3d(0, ${translateY}px, 0)`,
+          transition: 'transform 0.5s',
+          willChange: 'transform'
+        }}
       >
-        <div style={{ opacity, zIndex }}>
-          <div
-            key={event._id}
-            id={event._id}
-            className="bg-light-gray br4 pt3 pl3"
-            style={{
-              ...style,
-              transition: 'top 0.5s',
-              width,
-              left
-            }}
-          >
-            <div className="ml4" style={{ zIndex }}>
-              <div className="f5">
-                {moment(event.rangeStart)
-                  .add(this.state.extendDir === 'END' ? 0 : hourOffset, 'hours')
-                  .format('MMMM D @ h A')}
-              </div>
-              <div className="f6 lh-copy">
-                {event._id}
-              </div>
-            </div>
-          </div>
-          <div
-            className=""
-            style={{ ...style, transition: 'top 0.5s', zIndex }}
-          >
-            <div id="extend">
-              <Draggable
-                axis="x"
-                position={{ x: 0, y: 0 }}
-                onDrag={this.handleDrag}
-                onStart={this.handleStart('START')}
-                onStop={this.handleStop('START')}
-              >
-                <div
-                  style={{ cursor: 'ew-resize', zIndex }}
-                  className="absolute bg-light-gray h-100 w2 left-0 top-0 br4 br--left"
-                />
-              </Draggable>
-            </div>
-            <div id="extend">
-              <Draggable
-                axis="x"
-                position={{ x: 0, y: 0 }}
-                onDrag={this.handleDrag}
-                onStart={this.handleStart('END')}
-                onStop={this.handleStop('END')}
-              >
-                <div
-                  style={{ cursor: 'ew-resize', zIndex }}
-                  className="absolute bg-light-gray h-100 w2 right-0 top-0 br4 br--right"
-                >
-                  {this.state.extendDir === 'END' &&
-                    <div>
-                      <div
-                        className="absolute"
-                        style={{
-                          height: '120%',
-                          width: '2px',
-                          top: '-11%',
-                          right: '-1px',
-                          backgroundColor: '#979797'
-                        }}
-                      />
-                      <div
-                        className="absolute"
-                        style={{ left: '-10px', top: '-45px' }}
-                      >
-                        <TimeBox
-                          time={moment(event.rangeEnd)
-                            .add(
-                              this.state.extendDir === 'END' ? hourOffset : 0,
-                              'hours'
-                            )
-                            .format('h A')}
-                        />
-                      </div>
-                    </div>}
+        <Draggable
+          axis="x"
+          cancel="#extend"
+          onStart={this.handleStart()}
+          onStop={this.handleStop()}
+          onDrag={this.handleDrag}
+          position={{ x: 0, y: 0 }}
+        >
+          <div style={{ opacity, zIndex }}>
+            <div
+              key={event._id}
+              id={event._id}
+              className="bg-light-gray br3 pt3 pl3"
+              style={{
+                ...style,
+                width,
+                left
+              }}
+            >
+              <div className="ml1" style={{ zIndex: zIndex + 1 }}>
+                <div className="f5 truncate">
+                  {moment(event.rangeStart)
+                    .add(
+                      this.state.extendDir === 'END' ? 0 : hourOffset,
+                      'hours'
+                    )
+                    .format('MMMM D @ h A')}
                 </div>
-              </Draggable>
+                <div className="f6 lh-copy">
+                  {event._id}
+                </div>
+              </div>
+            </div>
+            <div
+              className=""
+              style={{ ...style, transition: 'top 0.5s', zIndex }}
+            >
+              <div id="extend">
+                <Draggable
+                  axis="x"
+                  position={{ x: 0, y: 0 }}
+                  onDrag={this.handleDrag}
+                  onStart={this.handleStart('START')}
+                  onStop={this.handleStop('START')}
+                >
+                  <div
+                    style={{ cursor: 'ew-resize', zIndex }}
+                    className="absolute h-100 w2 left-0 top-0 br3 br--left"
+                  >
+                    {this.state.extendDir === 'START' &&
+                      <div>
+                        <div
+                          className="absolute"
+                          style={{
+                            height: '120%',
+                            width: '2px',
+                            top: '-11%',
+                            left: '-1px',
+                            backgroundColor: '#979797'
+                          }}
+                        />
+                        <div
+                          className="absolute"
+                          style={{ right: '-11px', top: '-45px' }}
+                        >
+                          <TimeBox
+                            time={moment(event.rangeStart)
+                              .add(
+                                this.state.extendDir === 'START'
+                                  ? hourOffset
+                                  : 0,
+                                'hours'
+                              )
+                              .format('h A')}
+                          />
+                        </div>
+                      </div>}
+                  </div>
+                </Draggable>
+              </div>
+              <div id="extend">
+                <Draggable
+                  axis="x"
+                  position={{ x: 0, y: 0 }}
+                  onDrag={this.handleDrag}
+                  onStart={this.handleStart('END')}
+                  onStop={this.handleStop('END')}
+                >
+                  <div
+                    style={{ cursor: 'ew-resize', zIndex }}
+                    className="absolute h-100 w2 right-0 top-0 br3 br--right"
+                  >
+                    {this.state.extendDir === 'END' &&
+                      <div>
+                        <div
+                          className="absolute"
+                          style={{
+                            height: '120%',
+                            width: '2px',
+                            top: '-11%',
+                            right: '-1px',
+                            backgroundColor: '#979797'
+                          }}
+                        />
+                        <div
+                          className="absolute"
+                          style={{ left: '-10px', top: '-45px' }}
+                        >
+                          <TimeBox
+                            time={moment(event.rangeEnd)
+                              .add(
+                                this.state.extendDir === 'END' ? hourOffset : 0,
+                                'hours'
+                              )
+                              .format('h A')}
+                          />
+                        </div>
+                      </div>}
+                  </div>
+                </Draggable>
+              </div>
             </div>
           </div>
-        </div>
-      </Draggable>
+        </Draggable>
+      </div>
     )
   }
 }

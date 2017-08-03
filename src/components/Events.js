@@ -48,13 +48,14 @@ class Events extends Component {
     const _ids = sortedIds(this.state.events)
     const _id = _ids[index]
     if (!_id) return <div id="phantom" key={key} style={style} />
-
     const event = this.state.events[_id]
+    const translateY = event.row * 75 + 45
     const handleStop = this.handleStop(index)
     return (
       <div key={key}>
         <Event
           event={event}
+          translateY={translateY}
           handleStop={handleStop}
           style={style}
           handleStart={this.handleStart}
@@ -78,7 +79,7 @@ class Events extends Component {
       height: datum.height,
       width: datum.width,
       x: datum.x,
-      y: datum.y
+      y: 0 // datum.y
     }
   }
 

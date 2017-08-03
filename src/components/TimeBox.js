@@ -7,8 +7,7 @@ const TimeBox = ({ time }) =>
       height: '33px',
       width: '85px',
       backgroundColor: '#4A4A4A',
-      borderRadius: '4px',
-      boxShadow: '1px 2px 2px #c8c8c8'
+      borderRadius: '4px'
     }}
   >
     <div className="white w-100 tc f6" style={{ lineHeight: '33px' }}>

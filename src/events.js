@@ -17,6 +17,15 @@ const a = (f, t, _id, atStart) => {
   }
 }
 
+const createEvents = num => {
+  const b = {}
+  for (let i = 0; i < num; i++) {
+    const _id = `a${Math.random()}`
+    Object.assign(b, { [_id]: a(4, 5, _id) })
+  }
+  return b
+}
+
 const events = {
   a: {
     _id: 'a',
