@@ -1,6 +1,5 @@
 {
   "private": "true",
   "name": "Schedule",
-  "main": "./Schedule.js"
+  "main": "./index.js"
 }
-
