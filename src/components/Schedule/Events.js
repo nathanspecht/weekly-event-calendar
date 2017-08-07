@@ -1,0 +1,155 @@
+import React, { Component } from 'react'
+import { Collection, ScrollSync } from 'react-virtualized'
+import {
+  identity,
+  compose,
+  values,
+  keys,
+  omit,
+  set,
+  lensProp,
+  sortBy,
+  prop
+} from 'ramda'
+import Event from './Event'
+import moment from 'moment'
+import assignRows from './assign-rows'
+import { numHours, getPixelCount, getHourCount } from './util'
+
+const sortedIds = compose(sortBy(identity), keys)
+
+const positionEvents = events => {
+  const _ids = sortedIds(events)
+  return _ids.map(_id => {
+    const event = events[_id]
+    const y = event.row * 75 + 45
+    const x = getPixelCount(moment().startOf('day'), event.rangeStart)
+    const width = getPixelCount(event.rangeStart, event.rangeEnd)
+    const height = 70
+    return { _id, y, x, width, height }
+  })
+}
+
+class Events extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      extraCells: 0,
+      phantomPosition: 0,
+      isDragging: false
+    }
+  }
+
+  cellRenderer = ({ key, style, index }) => {
+    const eventsWithRows = assignRows(this.props.events)
+    const _ids = sortedIds(eventsWithRows)
+    const _id = _ids[index]
+    if (!_id) return <div id="phantom" key={key} style={style} />
+    const event = eventsWithRows[_id]
+    const translateY = event.row * 75 + 45
+    const handleStop = this.handleStop(index)
+    return (
+      <div key={key}>
+        <Event
+          event={event}
+          translateY={translateY}
+          handleStop={handleStop}
+          style={style}
+          handleStart={this.handleStart}
+          isDragging={this.state.isDragging}
+        />
+      </div>
+    )
+  }
+
+  cellSizeAndPositionGetter = events => ({ index }) => {
+    const positionedEvents = positionEvents(events)
+    const datum = positionedEvents[index]
+    if (!datum)
+      return {
+        height: 50,
+        width: 50,
+        x: this.state.phantomPosition + 1505,
+        y: 550
+      }
+
+    return {
+      height: datum.height,
+      width: datum.width,
+      x: datum.x,
+      y: 0 // datum.y
+    }
+  }
+
+  handleStop = index => extend => (_, drag) => {
+    const eventsWithRows = assignRows(this.props.events)
+    const _ids = sortedIds(eventsWithRows)
+    const _id = _ids[index]
+    const event = eventsWithRows[_id]
+    const pixelOffset = drag.x
+    const hourOffset = getHourCount(pixelOffset)
+    const nextEvents = assignRows({
+      ...this.props.events,
+      [_id]: {
+        ...event,
+        rangeStart:
+          extend !== 'END'
+            ? moment(event.rangeStart).add(hourOffset, 'hours')
+            : event.rangeStart,
+        rangeEnd:
+          extend !== 'START'
+            ? moment(event.rangeEnd).add(hourOffset, 'hours')
+            : event.rangeEnd
+      }
+    })
+    const update = this.props.onUpdate(nextEvents)
+    if (update instanceof Promise) {
+      update.then(() => {
+        this.setState({ isDragging: false })
+        this.updateCollection()
+      })
+    } else {
+      this.setState({ isDragging: false })
+      this.updateCollection()
+    }
+  }
+
+  handleStart = () => this.setState({ isDragging: true })
+
+  updateCollection() {
+    this.setState({ extraCells: this.state.extraCells >= 1 ? 0 : 1 })
+  }
+
+  updatePhantomElement = ({ scrollWidth, scrollLeft }) => {
+    if (scrollLeft + 1512 >= scrollWidth) {
+      console.log('Updating scroll element')
+      this.setState({ phantomPosition: scrollWidth + 1512 })
+      this.updateCollection()
+    }
+  }
+
+  render() {
+    const cellCount =
+      values(this.props.events).length + this.state.extraCells + 2
+    const cellSizeAndPositionGetter = this.cellSizeAndPositionGetter(
+      this.props.events
+    )
+
+    return (
+      <Collection
+        onScroll={args => {
+          this.props.onScroll(args)
+          this.updatePhantomElement(args)
+        }}
+        ref={collection => (this.collection = collection)}
+        cellCount={cellCount}
+        cellRenderer={this.cellRenderer}
+        cellSizeAndPositionGetter={cellSizeAndPositionGetter}
+        height={600}
+        width={1512}
+      />
+    )
+  }
+}
+
+export default Events

@@ -1,0 +1,6 @@
+{
+  "private": "true",
+  "name": "Schedule",
+  "main": "./Schedule.js"
+}
+
