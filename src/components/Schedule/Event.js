@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Draggable from 'react-draggable'
 import TimeBox from './TimeBox'
 import moment from 'moment'
-import { getHourCount } from './util'
+import { getHourCount, getPixelCount } from './util'
 
 class Event extends Component {
   constructor(props) {
@@ -52,6 +52,20 @@ class Event extends Component {
     const opacity = isUnfocused ? 0.5 : 1
     const zIndex = isUnfocused ? -10 : 10
     const hourOffset = getHourCount(this.state.extendAmt)
+    const eventPixelCount =
+      getPixelCount(
+        event.rangeStart,
+        moment(event.rangeEnd).subtract(1, 'hour')
+      ) - 10
+
+    const fromTodayPixelCount =
+      -1 *
+      getPixelCount(
+        moment().isSameOrBefore(event.rangeStart)
+          ? moment()
+          : moment(event.rangeStart),
+        moment(event.rangeStart)
+      )
 
     return (
       <div
@@ -68,6 +82,7 @@ class Event extends Component {
           onStop={this.handleStop()}
           onDrag={this.handleDrag}
           position={{ x: 0, y: 0 }}
+          bounds={{ left: fromTodayPixelCount }}
         >
           <div style={{ opacity, zIndex }}>
             <div
@@ -105,6 +120,10 @@ class Event extends Component {
                   onDrag={this.handleDrag}
                   onStart={this.handleStart('START')}
                   onStop={this.handleStop('START')}
+                  bounds={{
+                    right: eventPixelCount,
+                    left: fromTodayPixelCount
+                  }}
                 >
                   <div
                     style={{ cursor: 'ew-resize', zIndex }}
@@ -148,6 +167,7 @@ class Event extends Component {
                   onDrag={this.handleDrag}
                   onStart={this.handleStart('END')}
                   onStop={this.handleStop('END')}
+                  bounds={{ left: -1 * eventPixelCount }}
                 >
                   <div
                     style={{ cursor: 'ew-resize', zIndex }}
