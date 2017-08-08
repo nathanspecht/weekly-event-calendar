@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Collection, ScrollSync } from 'react-virtualized'
-import {
+import R, {
   identity,
   compose,
   values,
@@ -9,7 +9,8 @@ import {
   set,
   lensProp,
   sortBy,
-  prop
+  prop,
+  maxBy
 } from 'ramda'
 import Event from './Event'
 import moment from 'moment'
@@ -19,9 +20,10 @@ import { numHours, getPixelCount, getHourCount } from './util'
 const sortedIds = compose(sortBy(identity), keys)
 
 const positionEvents = events => {
+  const eventsWithRows = assignRows(events)
   const _ids = sortedIds(events)
   return _ids.map(_id => {
-    const event = events[_id]
+    const event = eventsWithRows[_id]
     const y = event.row * 75 + 45
     const x = getPixelCount(moment().startOf('day'), event.rangeStart)
     const width = getPixelCount(event.rangeStart, event.rangeEnd)
@@ -41,12 +43,13 @@ class Events extends Component {
   }
 
   cellRenderer = ({ key, style, index }) => {
-    const eventsWithRows = assignRows(this.props.events)
-    const _ids = sortedIds(eventsWithRows)
+    const _ids = sortedIds(this.props.events)
     const _id = _ids[index]
-    if (!_id) return <div id="phantom" key={key} style={style} />
-    const event = eventsWithRows[_id]
-    const translateY = event.row * 75 + 45
+    if (!_id) {
+      return <div id="phantom" key={key} style={style} />
+    }
+    const event = this.props.events[_id]
+    const translateY = style.top
     const handleStop = this.handleStop(index)
     return (
       <div key={key}>
@@ -54,7 +57,7 @@ class Events extends Component {
           event={event}
           translateY={translateY}
           handleStop={handleStop}
-          style={style}
+          style={{ ...style, top: 0 }}
           handleStart={this.handleStart}
           isDragging={this.state.isDragging}
         />
@@ -62,33 +65,39 @@ class Events extends Component {
     )
   }
 
-  cellSizeAndPositionGetter = events => ({ index }) => {
+  cellSizeAndPositionGetter = events => {
+    const maxRow = R.reduce(
+      R.max,
+      0,
+      R.map(R.prop('row'), values(assignRows(events)))
+    )
     const positionedEvents = positionEvents(events)
-    const datum = positionedEvents[index]
-    if (!datum)
-      return {
-        height: 50,
-        width: 50,
-        x: this.state.phantomPosition + 1505,
-        y: 550
-      }
+    return ({ index }) => {
+      const datum = positionedEvents[index]
+      if (!datum)
+        return {
+          height: 50,
+          width: 50,
+          x: this.state.phantomPosition + 1505,
+          y: Math.max(550, maxRow * 75 + 50)
+        }
 
-    return {
-      height: datum.height,
-      width: datum.width,
-      x: datum.x,
-      y: 0 // datum.y
+      return {
+        height: datum.height,
+        width: datum.width,
+        x: datum.x,
+        y: datum.y
+      }
     }
   }
 
   handleStop = index => extend => (_, drag) => {
-    const eventsWithRows = assignRows(this.props.events)
-    const _ids = sortedIds(eventsWithRows)
+    const _ids = sortedIds(this.props.events)
     const _id = _ids[index]
-    const event = eventsWithRows[_id]
+    const event = this.props.events[_id]
     const pixelOffset = drag.x
     const hourOffset = getHourCount(pixelOffset)
-    const nextEvents = assignRows({
+    const nextEvents = {
       ...this.props.events,
       [_id]: {
         ...event,
@@ -101,7 +110,7 @@ class Events extends Component {
             ? moment(event.rangeEnd).add(hourOffset, 'hours')
             : event.rangeEnd
       }
-    })
+    }
     const update = this.props.onUpdate(nextEvents)
     if (update instanceof Promise) {
       update.then(() => {
