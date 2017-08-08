@@ -15,7 +15,7 @@ class Event extends Component {
   }
 
   handleStart = extendDir => () => {
-    this.props.handleStart()
+    this.props.handleStart(this.props.event._id)
     this.setState({ extendDir, isSelfDragging: true })
   }
 
@@ -49,8 +49,7 @@ class Event extends Component {
     const left = this.getLeft(style.left)
     const width = this.getWidth(style.width)
     const isUnfocused = this.props.isDragging && !this.state.isSelfDragging
-    const opacity = isUnfocused ? 0.5 : 1
-    const zIndex = isUnfocused ? -10 : 10
+    const opacity = 1
     const hourOffset = getHourCount(this.state.extendAmt)
     const eventPixelCount =
       getPixelCount(
@@ -69,10 +68,12 @@ class Event extends Component {
 
     return (
       <div
+        className="relative"
         style={{
           transform: `translate3d(0, ${translateY}px, 0)`,
           transition: 'transform 0.5s',
-          willChange: 'transform'
+          willChange: 'transform',
+          zIndex: translateY
         }}
       >
         <Draggable
@@ -84,18 +85,18 @@ class Event extends Component {
           position={{ x: 0, y: 0 }}
           bounds={{ left: fromTodayPixelCount }}
         >
-          <div style={{ opacity, zIndex }}>
+          <div>
             <div
               key={event._id}
               id={event._id}
-              className="bg-light-gray br3 pt3 pl3"
+              className="relative bg-light-gray br3 pt3 pl3"
               style={{
                 ...style,
                 width,
                 left
               }}
             >
-              <div className="ml1" style={{ zIndex: zIndex + 1 }}>
+              <div className="ml1 relative">
                 <div className="f5 truncate">
                   {moment(event.rangeStart)
                     .add(
@@ -109,10 +110,7 @@ class Event extends Component {
                 </div>
               </div>
             </div>
-            <div
-              className=""
-              style={{ ...style, transition: 'top 0.5s', zIndex }}
-            >
+            <div className="" style={{ ...style, transition: 'top 0.5s' }}>
               <div id="extend">
                 <Draggable
                   axis="x"
@@ -126,7 +124,7 @@ class Event extends Component {
                   }}
                 >
                   <div
-                    style={{ cursor: 'ew-resize', zIndex }}
+                    style={{ cursor: 'ew-resize' }}
                     className="absolute h-100 w1 left-0 top-0 br3 br--left"
                   >
                     {this.state.extendDir === 'START' &&
@@ -170,7 +168,7 @@ class Event extends Component {
                   bounds={{ left: -1 * eventPixelCount }}
                 >
                   <div
-                    style={{ cursor: 'ew-resize', zIndex }}
+                    style={{ cursor: 'ew-resize' }}
                     className="absolute h-100 w1 right-0 top-0 br3 br--right"
                   >
                     {this.state.extendDir === 'END' &&

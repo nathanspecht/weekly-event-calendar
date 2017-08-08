@@ -14,7 +14,7 @@ class TestWrapper extends Component {
     }
   }
 
-  updateEvents = events => console.log(events) || this.setState({ events })
+  updateEvents = events => this.setState({ events })
 
   render() {
     return <Schedule events={this.state.events} onUpdate={this.updateEvents} />

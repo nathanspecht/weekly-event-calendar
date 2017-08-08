@@ -19,27 +19,35 @@ import { numHours, getPixelCount, getHourCount } from './util'
 
 const sortedIds = compose(sortBy(identity), keys)
 
-const positionEvents = events => {
-  const eventsWithRows = assignRows(events)
-  const _ids = sortedIds(events)
-  return _ids.map(_id => {
-    const event = eventsWithRows[_id]
-    const y = event.row * 75 + 45
-    const x = getPixelCount(moment().startOf('day'), event.rangeStart)
-    const width = getPixelCount(event.rangeStart, event.rangeEnd)
-    const height = 70
-    return { _id, y, x, width, height }
-  })
-}
-
 class Events extends Component {
   constructor(props) {
     super(props)
+    this.previousRows = {}
     this.state = {
       extraCells: 0,
       phantomPosition: 0,
       isDragging: false
     }
+  }
+
+  positionEvents = () => {
+    const { isDragging } = this.state
+    const { events } = this.props
+    const eventsWithRows = assignRows(
+      events,
+      isDragging,
+      this.previousRows[isDragging]
+    )
+    this.previousRows = R.map(R.prop('row'), eventsWithRows)
+    const _ids = sortedIds(events)
+    return _ids.map(_id => {
+      const event = eventsWithRows[_id]
+      const y = event.row * 75 + 45
+      const x = getPixelCount(moment().startOf('day'), event.rangeStart)
+      const width = getPixelCount(event.rangeStart, event.rangeEnd)
+      const height = 70
+      return { _id, y, x, width, height }
+    })
   }
 
   cellRenderer = ({ key, style, index }) => {
@@ -71,7 +79,7 @@ class Events extends Component {
       0,
       R.map(R.prop('row'), values(assignRows(events)))
     )
-    const positionedEvents = positionEvents(events)
+    const positionedEvents = this.positionEvents(events)
     return ({ index }) => {
       const datum = positionedEvents[index]
       if (!datum)
@@ -123,7 +131,8 @@ class Events extends Component {
     }
   }
 
-  handleStart = () => this.setState({ isDragging: true })
+  handleStart = idx =>
+    this.setState({ isDragging: idx }, () => this.updateCollection())
 
   updateCollection() {
     this.setState({ extraCells: this.state.extraCells >= 1 ? 0 : 1 })
@@ -131,7 +140,6 @@ class Events extends Component {
 
   updatePhantomElement = ({ scrollWidth, scrollLeft }) => {
     if (scrollLeft + 1512 >= scrollWidth) {
-      console.log('Updating scroll element')
       this.setState({ phantomPosition: scrollWidth + 1512 })
       this.updateCollection()
     }
