@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import Schedule from './components/Schedule'
+import Schedule from 'components/Schedule'
 import registerServiceWorker from './registerServiceWorker'
 import generateEvents from './generate-events'
 import './index.css'
@@ -10,14 +10,26 @@ class TestWrapper extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      events: generateEvents
+      events: generateEvents,
+      something: null
     }
   }
 
-  updateEvents = events => this.setState({ events })
+  updateEvent = event =>
+    this.setState({
+      events: { ...this.state.events, [event._id]: event }
+    })
+
+  updateEventDelayed = event =>
+    new Promise(resolve =>
+      setTimeout(() => {
+        this.updateEvent(event)
+        resolve()
+      }, 200)
+    )
 
   render() {
-    return <Schedule events={this.state.events} onUpdate={this.updateEvents} />
+    return <Schedule events={this.state.events} onUpdate={this.updateEvent} />
   }
 }
 
