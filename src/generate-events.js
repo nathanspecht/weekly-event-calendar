@@ -11,9 +11,11 @@ const a = (f, t, _id, atStart) => {
   )
 
   return {
-    _id,
-    rangeStart: addDays(f),
-    rangeEnd: addDays(t)
+    [_id]: {
+      _id,
+      rangeStart: addDays(f),
+      rangeEnd: addDays(t)
+    }
   }
 }
 
@@ -27,35 +29,20 @@ const createEvents = num => {
 }
 
 const events = {
-  a: {
-    _id: 'a',
-    rangeStart: moment('2017-08-07T12:00:00.000'),
-    rangeEnd: moment('2017-08-11T12:00:00.000')
-  },
-  b: {
-    _id: 'b',
-    rangeStart: moment('2017-08-08T12:00:00.000'),
-    rangeEnd: moment('2017-08-11T17:00:00.000')
-  },
-  c: {
-    _id: 'c',
-    rangeStart: moment('2017-08-05T12:00:00.000'),
-    rangeEnd: moment('2017-08-09T00:00:00.000')
-  },
-  d: {
-    _id: 'd',
-    rangeStart: moment('2017-08-09T12:00:00.000'),
-    rangeEnd: moment('2017-08-13T00:00:00.000')
-  },
-  e: {
-    _id: 'e',
-    rangeStart: moment().add(1, 'day'),
-    rangeEnd: moment().add(3, 'days')
-  },
-  g: a(3, 10, 'g', true),
-  h: a(2, 4, 'h', true),
-  i: a(2, 4, 'i', false),
-  j: a(2, 4, 'j', true)
+  ...a(2, 4, 'a', true),
+  ...a(4, 5, 'b', true),
+  ...a(5, 6, 'c', true),
+  ...a(6, 7, 'd', true),
+  ...a(7, 8, 'e', true),
+  ...a(8, 9, 'f', true),
+  ...a(8, 9, 'g', true),
+  ...a(8, 9, 'h', true),
+  ...a(8, 9, 'i', true),
+  ...a(8, 9, 'j', true),
+  ...a(8, 9, 'k', true),
+  ...a(8, 9, 'l', true),
+  ...a(8, 9, 'm', true),
+  ...a(8, 9, 'n', true)
 }
 
 export default events
