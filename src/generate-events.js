@@ -35,6 +35,15 @@ const events = {
   ...a(6, 7, 'd', true),
   ...a(7, 8, 'e', true),
   ...a(8, 9, 'f', true)
+  // ...a(8, 9, 'g', true),
+  // ...a(8, 9, 'h', true),
+  // ...a(8, 9, 'i', true),
+  // ...a(8, 9, 'j', true),
+  // ...a(8, 9, 'k', true),
+  // ...a(8, 9, 'l', true),
+  // ...a(8, 9, 'm', true),
+  // ...a(8, 9, 'n', true),
+  // ...a(8, 9, 'o', true)
 }
 
 export default events
