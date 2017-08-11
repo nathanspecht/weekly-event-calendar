@@ -6,6 +6,8 @@ import generateEvents from './generate-events'
 import './index.css'
 import 'react-virtualized/styles.css'
 
+const describeEvent = ({ _id }) => `ID: ${_id}`
+
 class TestWrapper extends Component {
   constructor(props) {
     super(props)
@@ -29,7 +31,14 @@ class TestWrapper extends Component {
     )
 
   render() {
-    return <Schedule events={this.state.events} onUpdate={this.updateEvent} />
+    return (
+      <Schedule
+        events={this.state.events}
+        onUpdate={this.updateEvent}
+        describeEvent={describeEvent}
+        onEventClick={event => console.log(`Event clicked: ${event._id}`)}
+      />
+    )
   }
 }
 
