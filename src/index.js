@@ -5,6 +5,7 @@ import registerServiceWorker from './registerServiceWorker'
 import generateEvents from './generate-events'
 import './index.css'
 import 'react-virtualized/styles.css'
+import './tachyons.min.css'
 
 const describeEvent = ({ _id }) => `ID: ${_id}`
 
