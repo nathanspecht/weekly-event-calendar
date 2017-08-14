@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
 import Schedule from 'components/Schedule'
+import DefaultDropdown from 'components/Schedule/DefaultDropdown'
 import registerServiceWorker from './registerServiceWorker'
 import generateEvents from './generate-events'
 import './index.css'
@@ -38,6 +39,7 @@ class TestWrapper extends Component {
         onUpdate={this.updateEvent}
         describeEvent={describeEvent}
         onEventClick={event => console.log(`Event clicked: ${event._id}`)}
+        Dropdown={DefaultDropdown}
       />
     )
   }
