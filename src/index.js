@@ -39,7 +39,7 @@ class TestWrapper extends Component {
         onUpdate={this.updateEvent}
         describeEvent={describeEvent}
         onEventClick={event => console.log(`Event clicked: ${event._id}`)}
-        Dropdown={DefaultDropdown}
+        Dropdown={<DefaultDropdown />}
       />
     )
   }
