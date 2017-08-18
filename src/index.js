@@ -19,10 +19,8 @@ class TestWrapper extends Component {
     }
   }
 
-  updateEvent = event =>
-    this.setState({
-      events: { ...this.state.events, [event._id]: event }
-    })
+  updateEvents = events =>
+    new Promise(resolve => this.setState({ events }, () => resolve()))
 
   updateEventDelayed = event =>
     new Promise(resolve =>
@@ -36,7 +34,7 @@ class TestWrapper extends Component {
     return (
       <Schedule
         events={this.state.events}
-        onUpdate={this.updateEvent}
+        onUpdate={this.updateEvents}
         describeEvent={describeEvent}
         onEventClick={event => console.log(`Event clicked: ${event._id}`)}
         Dropdown={<DefaultDropdown />}
