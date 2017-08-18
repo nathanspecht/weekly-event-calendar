@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom'
 import Schedule from 'components/Schedule'
 import DefaultDropdown from 'components/Schedule/DefaultDropdown'
 import registerServiceWorker from './registerServiceWorker'
-import generateEvents from './generate-events'
+import generateEvents, { createEvent } from './generate-events'
 import './index.css'
 import 'react-virtualized/styles.css'
 import './tachyons.min.css'
@@ -30,15 +30,26 @@ class TestWrapper extends Component {
       }, 200)
     )
 
+  createEvent = () =>
+    this.setState({
+      events: {
+        ...this.state.events,
+        ...createEvent(3, 4, `a-${Math.random()}`)
+      }
+    })
+
   render() {
     return (
-      <Schedule
-        events={this.state.events}
-        onUpdate={this.updateEvents}
-        describeEvent={describeEvent}
-        onEventClick={event => console.log(`Event clicked: ${event._id}`)}
-        Dropdown={<DefaultDropdown />}
-      />
+      <div>
+        <button onClick={this.createEvent}>Add Event</button>
+        <Schedule
+          events={this.state.events}
+          onUpdate={this.updateEvents}
+          describeEvent={describeEvent}
+          onEventClick={event => console.log(`Event clicked: ${event._id}`)}
+          Dropdown={<DefaultDropdown />}
+        />
+      </div>
     )
   }
 }
