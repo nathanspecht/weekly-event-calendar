@@ -29,7 +29,7 @@ const createEvents = num => {
 }
 
 const events = {
-  ...createEvent(2, 4, 'a', true),
+  ...createEvent(-1, 4, 'a', true),
   ...createEvent(4, 5, 'b', true),
   ...createEvent(5, 6, 'c', true),
   ...createEvent(6, 7, 'd', true),
