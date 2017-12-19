@@ -1,6 +1,6 @@
 {
   "name": "weekly-event-calendar",
-  "version": "0.0.32",
+  "version": "0.0.35",
   "private": false,
   "main": "lib/index.js",
   "devDependencies": {
