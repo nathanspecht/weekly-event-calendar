@@ -8,14 +8,14 @@ import './index.css'
 import 'react-virtualized/styles.css'
 import './tachyons.min.css'
 
-const describeEvent = ({ _id }) => `ID: ${_id}`
+const describeEvent = ({ id }) => `ID: ${id}`
 
 class TestWrapper extends Component {
   constructor(props) {
     super(props)
     this.state = {
       events: generateEvents,
-      something: null
+      something: null,
     }
   }
 
@@ -27,15 +27,15 @@ class TestWrapper extends Component {
       setTimeout(() => {
         this.updateEvent(event)
         resolve()
-      }, 200)
+      }, 200),
     )
 
   createEvent = () =>
     this.setState({
       events: {
         ...this.state.events,
-        ...createEvent(3, 4, `a-${Math.random()}`)
-      }
+        ...createEvent(3, 4, `a-${Math.random()}`),
+      },
     })
 
   render() {
@@ -46,7 +46,7 @@ class TestWrapper extends Component {
           events={this.state.events}
           onUpdate={this.updateEvents}
           describeEvent={describeEvent}
-          onEventClick={event => console.log(`Event clicked: ${event._id}`)}
+          onEventClick={event => console.log(`Event clicked: ${event.id}`)}
           Dropdown={<DefaultDropdown />}
         />
       </div>
