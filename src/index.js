@@ -38,11 +38,17 @@ class TestWrapper extends Component {
       },
     })
 
+  updateRows = () => this.schedule.updateRows()
+
   render() {
     return (
       <div>
         <button onClick={this.createEvent}>Add Event</button>
+        <button onClick={this.updateRows}>Update rows</button>
         <Schedule
+          ref={schedule => {
+            this.schedule = schedule
+          }}
           events={this.state.events}
           onUpdate={this.updateEvents}
           describeEvent={describeEvent}
